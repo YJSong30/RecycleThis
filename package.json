@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "^3.1.1",
+    "@react-native-voice/voice": "^3.2.4",
     "expo": "~50.0.2",
     "expo-location": "^16.5.2",
     "expo-status-bar": "~1.11.1",
@@ -17,7 +18,8 @@
     "react-dom": "18.2.0",
     "react-native": "0.73.2",
     "react-native-maps": "^1.9.1",
-    "react-native-web": "~0.19.6"
+    "react-native-web": "~0.19.6",
+    "expo-av": "~13.10.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
