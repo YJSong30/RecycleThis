@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Button, StyleSheet, Dimensions, TouchableOpacity, Text, SafeAreaView, Alert } from 'react-native';
+import { View, Button, StyleSheet, Dimensions, TouchableOpacity, Text, SafeAreaView, Alert, Linking } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import getLocation from '../util/getLocation';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import Icon
@@ -11,6 +11,8 @@ import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { shareAsync } from 'expo-sharing';
 import CameraScan from '../CameraScan';
+
+
 
 const GOOGLE_CLOUD_API_KEY = 'AIzaSyDy6DQJ1lr29xJPQ0DgagixGE5Tim5eJ90';
 const GOOGLE_CLOUD_SPEECH_API_URL = 'https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyDy6DQJ1lr29xJPQ0DgagixGE5Tim5eJ90';
@@ -40,6 +42,9 @@ const HomeScreen = () => {
   const [showCamera, setShowCamera] = useState(false);
   const [photo, setPhoto] = useState(null);
   const cameraRef = useRef(null);
+  const [directions, setDirections] = useState(null);
+  const [showDirections, setShowDirections] = useState(false);
+
 
   const toggleCamera = () => {
     setShowCamera(!showCamera);
@@ -197,7 +202,6 @@ const HomeScreen = () => {
     setRecordings([]);
   }
 
-
   useEffect(() => {
     const fetchLocation = async () => {
       const loc = await getLocation();
@@ -206,6 +210,37 @@ const HomeScreen = () => {
 
     fetchLocation();
   }, []);
+
+
+  const generateDirectionURL = (destination) => {
+
+    const userLatitude = location.coords.latitude;
+    const userLongitude = location.coords.longitude;
+    const destLatitude = destination.latitude;
+    const destLongitude = destination.longitude;
+
+    return `https://maps.googleapis.com/maps/api/directions/json?origin=${userLatitude},${userLongitude}&destination=${destLatitude},${destLongitude}&key=${GOOGLE_CLOUD_API_KEY}`;
+
+  }
+
+  const fetchDirections = async (destination) => {
+    try {
+      const url = generateDirectionURL(destination);
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.routes.length) {
+        setDirections(data.routes[0].legs[0]); 
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const openGoogleMaps = (destination) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${destination.latitude},${destination.longitude}&travelmode=walking`;
+    Linking.openURL(url);
+  };
+
 
   const handlePress = async () => {
     // Check and request permission
@@ -234,21 +269,35 @@ const HomeScreen = () => {
     }
   };
 
-  const handleBinMarkerPress = (binLocation) => {
+  const handleBinMarkerPress = async (binLocation) => {
     console.log("Recycling bin at:", binLocation.name);
+    await fetchDirections(binLocation);
     // Additional actions can be performed here
   };
 
   return (
     <View style={styles.container}>
+      {directions && (
+        <View>
+          <Text style={styles.directionsText}>Distance: {directions.distance.text}</Text>
+          <Text style={styles.directionsText}>Duration: {directions.duration.text}</Text>
+          <TouchableOpacity
+            style={styles.navigateButton}
+            onPress={() => openGoogleMaps(directions.end_location)}
+          >
+            <Text styles={styles.directionsText}>Open in Maps</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {location && (
         <MapView
           style={styles.map}
           initialRegion={{
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+            latitudeDelta: 0.0022,
+            longitudeDelta: 0.0011,
           }}
         >
           <Marker
@@ -257,13 +306,15 @@ const HomeScreen = () => {
               longitude: location.coords.longitude,
             }}
             title={"Your Location"}
-
           />
           {/* Markers for recycling bins */}
           {binLocations.map((binLocation, index) => (
             <Marker
               key={index}
-              coordinate={{ latitude: binLocation.latitude, longitude: binLocation.longitude }}
+              coordinate={{
+                latitude: binLocation.latitude,
+                longitude: binLocation.longitude,
+              }}
               title={binLocation.name}
               onPress={() => handleBinMarkerPress(binLocation)}
             >
@@ -283,16 +334,14 @@ const HomeScreen = () => {
           </View>
         </Camera>
       )} */}
-    
+
       <View style={styles.container}>
         <TouchableOpacity onPress={toggleCamera} style={styles.cameraButton}>
           <Icon name="camera-alt" size={30} color="#FFF" />
           {showCamera && <CameraScan />}
-         
         </TouchableOpacity>
       </View>
 
-      
       <TouchableOpacity style={styles.micButton} onPress={handlePress}>
         <Icon name="mic" size={30} color="#FFF" />
       </TouchableOpacity>
@@ -325,7 +374,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 20,
     alignSelf: "left",
-    backgroundColor: "#007AFF", // Change as per your preference
+    backgroundColor: "green", 
     borderRadius: 30,
     left: 20,
     width: 60,
@@ -343,13 +392,28 @@ const styles = StyleSheet.create({
   },
   cameraButton: {
     position: "absolute",
-    backgroundColor: "#007AFF",
+    backgroundColor: "green",
     bottom: 110,
     right: 20,
     padding: 15,
     borderRadius: 35,
+    justifyContent: "center",
+    alignItems: "center",
    
   },
+
+  navigateButton: {
+    marginTop: 20,
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+  },
+
+  directionsText:{
+    color:'black',
+    fontSize:20,
+  }
+
 });
 
 export default HomeScreen;
