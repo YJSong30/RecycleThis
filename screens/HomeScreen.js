@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Button, StyleSheet, Dimensions, TouchableOpacity, Text, SafeAreaView } from 'react-native';
+import { View, Button, StyleSheet, Dimensions, TouchableOpacity, Text, SafeAreaView, Alert } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import getLocation from '../util/getLocation';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import Icon
@@ -28,25 +28,42 @@ const HomeScreen = () => {
     console.log("Toggling camera, showCamera:", !showCamera);
   };
 
-  const takePic = async () => {
-    if (cameraRef.current) {
-      const options = { quality: 1, base64: true, exif: false };
-      const newPhoto = await cameraRef.current.takePictureAsync(options);
-      setPhoto(newPhoto);
+  let takePic = async () => {
+    let options = {
+      quality: 0.5, // adjust the quality for performance
+      base64: true,
+      exif: false,
+    };
+
+    let newPhoto = await cameraRef.current.takePictureAsync(options);
+    setPhoto(newPhoto);
+    await uploadImageToModel(newPhoto.uri);
+  };
+  
+  // upload image to model's endpoint
+
+  const uploadImageToModel = async (imageUri) => {
+    const data = new FormData();
+    data.append("photo", {
+      uri: imageUri,
+      type: "image/jpeg", 
+      name: "upload.jpg", 
+    });
+
+    try {
+      const response = await fetch("YOUR_MODEL_ENDPOINT", {
+        method: "POST",
+        body: data,
+      });
+
+      const result = await response.json();
+      // model implementation here
+
+      console.log(result);
+    } catch (error) {
+      console.error(error);
     }
   };
-
-  if (photo) {
-    // Photo preview and options to share, save, or discard
-    return (
-      <SafeAreaView style={styles.container}>
-        <Image style={styles.preview} source={{ uri: photo.uri }} />
-        <Button title="Share" onPress={() => shareAsync(photo.uri)} />
-        <Button title="Save" onPress={() => MediaLibrary.saveToLibraryAsync(photo.uri)} />
-        <Button title="Discard" onPress={() => setPhoto(null)} />
-      </SafeAreaView>
-    );
-  }
 
   
   const convertAudioToBase64 = async (uri) => {
@@ -234,6 +251,7 @@ const HomeScreen = () => {
         <TouchableOpacity onPress={toggleCamera} style={styles.cameraButton}>
           <Icon name="camera-alt" size={30} color="#FFF" />
           {showCamera && <CameraScan />}
+         
         </TouchableOpacity>
       </View>
 

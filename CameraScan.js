@@ -5,13 +5,14 @@ import { FontAwesome } from 'react-native-vector-icons';
 import * as MediaLibrary from 'expo-media-library';
 import { shareAsync } from 'expo-sharing';
 import { StatusBar } from 'expo-status-bar';
+import { Alert } from 'react-native';
 
 
-const CameraScan = () => {
+const CameraScan = ( { onHide }) => {
   let cameraRef = useRef();
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
-  const [photo, setPhoto] = useState();
+  const [photo, setPhoto] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -42,7 +43,9 @@ const CameraScan = () => {
 
     let newPhoto = await cameraRef.current.takePictureAsync(options);
     setPhoto(newPhoto);
+    console.log(newPhoto.uri); 
   };
+
 
   if (photo) {
     let sharePic = () => {
@@ -57,20 +60,9 @@ const CameraScan = () => {
       });
     };
 
-    return (
-      <SafeAreaView style={styles.container}>
-        <Image
-          style={styles.preview}
-          source={{ uri: "data:image/jpg;base64," + photo.base64 }}
-        />
-        <Button title="Share" onPress={sharePic} />
-        {hasMediaLibraryPermission ? (
-          <Button title="Save" onPress={savePhoto} />
-        ) : undefined}
-        <Button title="Discard" onPress={() => setPhoto(undefined)} />
-      </SafeAreaView>
-    );
   }
+
+
 
   return (
     <Camera style={styles.camera} ref={cameraRef}>
@@ -83,7 +75,7 @@ const CameraScan = () => {
   );
 };
 
-  
+
 //   const [type, setType] = useState(CameraType.back);
 //   const [permission, requestPermission] = Camera.useCameraPermissions();
 

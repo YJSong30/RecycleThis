@@ -19,19 +19,5 @@ const styles = StyleSheet.create({
       alignItems: "center",
       justifyContent: "center",
     },
-
-    preview: {
-      alignSelf: "stretch",
-      flex: 1,
-    },
-    cameraButton: {
-      backgroundColor: "#007AFF",
-      borderRadius: 30,
-      padding: 30,
-      alignItems: "center",
-      justifyContent: "center",
-      position: "absolute",
-      alignSelf: "center",
-      top: 340,
-    },
-  });
+  }
+)
