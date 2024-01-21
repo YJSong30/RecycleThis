@@ -289,8 +289,12 @@ const HomeScreen = () => {
       <View style={styles.container}>
         {directions && (
           <View>
-            <Text style={styles.directionsText}>Distance: {directions.distance.text}</Text>
-            <Text style={styles.directionsText}>Duration: {directions.duration.text}</Text>
+            <Text style={styles.directionsText}>
+              Distance: {directions.distance.text}
+            </Text>
+            <Text style={styles.directionsText}>
+              Duration: {directions.duration.text}
+            </Text>
             <TouchableOpacity
               style={styles.navigateButton}
               onPress={() => openGoogleMaps(directions.end_location)}
@@ -299,7 +303,7 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
         )}
-  
+
         {location && (
           <MapView
             style={styles.map}
@@ -334,7 +338,7 @@ const HomeScreen = () => {
             ))}
           </MapView>
         )}
-  
+
         {/* {showCamera && (
           <Camera style={styles.camera} ref={cameraRef}>
             <View style={styles.cameraContent}>
@@ -344,18 +348,22 @@ const HomeScreen = () => {
             </View>
           </Camera>
         )} */}
-  
-        <View style={styles.container}>
-          <TouchableOpacity onPress={toggleCamera} style={styles.cameraButton}>
-            <Icon name="close" size={30} color="#FFF" />
-            {showCamera && <CameraScan />}
-          </TouchableOpacity>
-        </View>
-  
+
+        <TouchableOpacity onPress={toggleCamera} style={styles.cameraButton}>
+          {showCamera ? (
+            <>
+              <Icon name="close" size={30} color="#FFF" />
+              <CameraScan />
+            </>
+          ) : (
+            <Icon name="camera-alt" size={30} color="#FFF" />
+          )}
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.micButton} onPress={handlePress}>
           <Icon name="mic" size={30} color="#FFF" />
         </TouchableOpacity>
-  
+
         {/* {recordings.length > 0 && 
           <View style={styles.playButton}>
             <Button

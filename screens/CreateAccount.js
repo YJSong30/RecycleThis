@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Image, Alert, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Button, TextInput } from 'react-native-paper';
+import axios from 'axios';
 
 
 function CreateAccount() {
@@ -10,11 +11,28 @@ function CreateAccount() {
   const [password, setPassword] = useState("");
 
 
-  const handleSubmit = () => {
+  const handleSubmit = async ()  => {
     navigation.navigate("Welcome");
+    try {
+      const response = await axios.post(
+        "https://test-8wlq.onrender.com/api/user/register",
+        {
+          email,
+          password,
+        }
+      );
+      
+      if (response.status === 200) {
+        Alert.alert("Signup Successful");
+       
+      } else {
+        Alert.alert("Signup Failed");
+      }
+    } catch (error) {
+      console.log(error);
+    }
     Alert.alert("Your account has been created!");
-
-  }
+  };
 
 
   return (
@@ -24,8 +42,8 @@ function CreateAccount() {
         style={styles.textboxes}
         autoCapitalize="none"
         placeholder="Email"
-        onChangeText={setEmail} // Corrected from setUsername to setEmail
-        value={email} // Corrected from username to email
+        onChangeText={setEmail} 
+        value={email} 
       />
       <TextInput
         style={styles.textboxes}
@@ -66,4 +84,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateAccount    
+export default CreateAccount

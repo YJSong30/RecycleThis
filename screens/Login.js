@@ -32,23 +32,23 @@ function Login() {
   const handleSignup = async () => {
     navigation.navigate(CreateAccount);
 
-    // try {
-    //   const response = await axios.post('https://test-8wlq.onrender.com/api/user/register', {
-    //     email,
-    //     password
-    //   });
-    //   // Handle signup response here
-    //   if (response.status === 200) {
-    //     Alert.alert("Signup Successful");
-    //     // Optional: Navigate to a different screen
-    //     // navigation.navigate('SomeOtherScreen');
-    //   } else {
-    //     Alert.alert("Signup Failed");
-    //   }
-    // } catch (error) {
-    //   console.log(error);
+    try {
+      const response = await axios.post('https://test-8wlq.onrender.com/api/user/register', {
+        email,
+        password
+      });
+      // Handle signup response here
+      if (response.status === 200) {
+        Alert.alert("Signup Successful");
+        // Optional: Navigate to a different screen
+        // navigation.navigate('SomeOtherScreen');
+      } else {
+        Alert.alert("Signup Failed");
+      }
+    } catch (error) {
+      console.log(error);
       
-    // }
+    }
   };
 
   return (
