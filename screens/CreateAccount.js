@@ -11,8 +11,7 @@ function CreateAccount() {
   const [password, setPassword] = useState("");
 
 
-  const handleSubmit = async ()  => {
-    navigation.navigate("Welcome");
+  const handleSubmit = async () => {
     try {
       const response = await axios.post(
         "https://test-8wlq.onrender.com/api/user/register",
@@ -21,17 +20,16 @@ function CreateAccount() {
           password,
         }
       );
-      
+
       if (response.status === 200) {
         Alert.alert("Signup Successful");
-       
+        navigation.navigate("Welcome");
       } else {
         Alert.alert("Signup Failed");
       }
     } catch (error) {
       console.log(error);
     }
-    Alert.alert("Your account has been created!");
   };
 
 

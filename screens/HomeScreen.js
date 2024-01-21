@@ -11,6 +11,7 @@ import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { shareAsync } from 'expo-sharing';
 import CameraScan from '../CameraScan';
+import openaiCall from '../openaiCall';
 
 
 
