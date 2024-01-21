@@ -15,6 +15,24 @@ import CameraScan from '../CameraScan';
 const GOOGLE_CLOUD_API_KEY = 'AIzaSyDy6DQJ1lr29xJPQ0DgagixGE5Tim5eJ90';
 const GOOGLE_CLOUD_SPEECH_API_URL = 'https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyDy6DQJ1lr29xJPQ0DgagixGE5Tim5eJ90';
 
+const binLocations = [{name: "Stevenson Service Rd", latitude: 36.9968, longitude: -122.05191},
+{name: "Stevenson College", latitude: 36.99708, longitude: -122.05211},
+{name: "Stevenson Coffee House", latitude: 36.9973, longitude: -122.05227},
+{name: "Stevenson Coffee House", latitude: 36.99736, longitude: -122.05236},
+{name: "Casa Quarta", latitude: 36.99725, longitude: -122.05127},
+{name: "Near Casa Octava", latitude: 36.99666, longitude: -122.05216},
+{name: "Stevenson Apartments", latitude: 36.99633, longitude: -122.0523},
+{name: "Cowell Service Rd", latitude: 36.99636, longitude: -122.0538},
+{name: "Cowell College", latitude: 36.99658, longitude: -122.05377},
+{name: "Parrington House", latitude: 36.99644, longitude: -122.05425},
+{name: "Cowell-College Apartment No.3", latitude: 36.99627, longitude: -122.05444},
+{name: "Casa Segunda", latitude: 36.99791, longitude: -122.05111},
+{name: "Humanities & Social Science Building", latitude: 36.99835, longitude: -122.05512},
+{name: "McHenry Library", latitude: 36.99533, longitude:  -122.05919},
+{name: "Academic Resources Center", latitude: 36.99428, longitude: -122.05933},
+{name: "Baskin Engineering", latitude: 37.00014, longitude: -122.06301}];
+
+
 const HomeScreen = () => {
   const [recording, setRecording] = useState();
   const [recordings, setRecordings] = useState([]);
@@ -25,6 +43,7 @@ const HomeScreen = () => {
 
   const toggleCamera = () => {
     setShowCamera(!showCamera);
+
     console.log("Toggling camera, showCamera:", !showCamera);
   };
 
@@ -215,6 +234,11 @@ const HomeScreen = () => {
     }
   };
 
+  const handleBinMarkerPress = (binLocation) => {
+    console.log("Recycling bin at:", binLocation.name);
+    // Additional actions can be performed here
+  };
+
   return (
     <View style={styles.container}>
       {location && (
@@ -233,7 +257,20 @@ const HomeScreen = () => {
               longitude: location.coords.longitude,
             }}
             title={"Your Location"}
+
           />
+          {/* Markers for recycling bins */}
+          {binLocations.map((binLocation, index) => (
+            <Marker
+              key={index}
+              coordinate={{ latitude: binLocation.latitude, longitude: binLocation.longitude }}
+              title={binLocation.name}
+              onPress={() => handleBinMarkerPress(binLocation)}
+            >
+              {/* Custom recycling bin icon */}
+              <Icon name="recycling" size={30} color="green" />
+            </Marker>
+          ))}
         </MapView>
       )}
 
@@ -307,10 +344,10 @@ const styles = StyleSheet.create({
   cameraButton: {
     position: "absolute",
     backgroundColor: "#007AFF",
-    bottom: 20,
+    bottom: 110,
     right: 10,
     padding: 20,
-    borderRadius: 30,
+    borderRadius: 35,
    
   },
 });

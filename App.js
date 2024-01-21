@@ -6,18 +6,24 @@ import HomeScreen from './screens/HomeScreen';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import { FontAwesome } from 'react-native-vector-icons';
+import Login from './screens/Login';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
 
-export default function App() {
+const Stack = createNativeStackNavigator();
+
+const App = () => {
   
-  return <HomeScreen></HomeScreen>  
-}
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName='HomeScreen'>
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+export default App;
 
 
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-  }
-)
