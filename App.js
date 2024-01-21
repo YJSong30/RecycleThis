@@ -9,6 +9,7 @@ import { FontAwesome } from 'react-native-vector-icons';
 import Login from './screens/Login';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
+import CreateAccount from './screens/CreateAccount';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,9 +17,10 @@ const App = () => {
   
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Login'>
-        <Stack.Screen name="Login" component={Login} />
+      <Stack.Navigator initialRouteName='Welcome'>
+        <Stack.Screen name="Welcome" component={Login} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="CreateAccount" component={CreateAccount} />
 
       </Stack.Navigator>
     </NavigationContainer>
