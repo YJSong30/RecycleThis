@@ -11,7 +11,6 @@ import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { shareAsync } from 'expo-sharing';
 import CameraScan from '../CameraScan';
-import openaiCall from '../openaiCall';
 
 
 
@@ -72,33 +71,41 @@ const HomeScreen = () => {
     // upload image to model's endpoint
   
     const uploadImageToModel = async (imageUri) => {
-      console.log("loc 1");
-      const data = new FormData();
-      data.append("photo", {
-        uri: imageUri,
-        type: "image/jpeg",
-        name: "upload.jpg",
+    console.log("Uploading image to model's endpoint");
+    const data = new FormData();
+    data.append("photo", {
+      uri: imageUri,
+      type: "image/jpeg", 
+      name: "upload.jpg", 
+    });
+
+    try {
+      const response = await fetch("https://api-inference.huggingface.co/models/Giecom/giecom-vit-model-clasification-waste", 
+      {
+        headers: { Authorization: "Bearer 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" },
+        method: "POST",
+        body: data,
       });
 
-      try {
-        const response = await fetch(
-          "https://api-inference.huggingface.co/models/Giecom/giecom-vit-model-clasification-waste",
-          {
-            headers: {
-              Authorization: "Bearer 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",
-            },
-            method: "POST",
-            body: data,
-          }
-        );
+      const result = await response.json();
 
-        const result = await response.json();
+      if (result && result.length > 0) {
+        // Assuming the response is an array of materials with confidence scores
+        const highestMaterial = result.reduce((prev, current) => {
+          return (prev.confidence > current.confidence) ? prev : current;
+        });
 
-        console.log(result);
-      } catch (error) {
-        console.error(error);
+        console.log(`Greatest material: ${highestMaterial.name} with confidence: ${highestMaterial.confidence}`);
+        Alert.alert("Result", `Greatest material: ${highestMaterial.name} with confidence: ${highestMaterial.confidence}`);
+      } else {
+        console.log("No materials found in response.");
+        Alert.alert("Result", "No materials found in response.");
       }
-    };
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "An error occurred while uploading the image.");
+    }
+  };
   
     
     const convertAudioToBase64 = async (uri) => {
@@ -413,7 +420,7 @@ const styles = StyleSheet.create({
   cameraButton: {
     position: "absolute",
     backgroundColor: "green",
-    bottom: 118,
+    bottom: 18,
     right: 20,
     padding: 15,
     borderRadius: 35,
