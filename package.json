@@ -24,7 +24,9 @@
     "react-dom": "18.2.0",
     "react-native": "0.73.2",
     "react-native-maps": "^1.9.1",
-    "react-native-web": "~0.19.6"
+    "react-native-web": "~0.19.6",
+    "expo-media-library": "~15.9.1",
+    "expo-sharing": "~11.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

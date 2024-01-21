@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { View, Button, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Button, StyleSheet, Dimensions, TouchableOpacity, Text, SafeAreaView } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import getLocation from '../util/getLocation';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import Icon
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import axios from 'axios';
+import { FontAwesome } from 'react-native-vector-icons';
+import { Camera } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
+import { shareAsync } from 'expo-sharing';
+import CameraScan from '../CameraScan';
 
 const GOOGLE_CLOUD_API_KEY = 'AIzaSyDy6DQJ1lr29xJPQ0DgagixGE5Tim5eJ90';
 const GOOGLE_CLOUD_SPEECH_API_URL = 'https://speech.googleapis.com/v1/speech:recognize?key=AIzaSyDy6DQJ1lr29xJPQ0DgagixGE5Tim5eJ90';
@@ -14,7 +19,36 @@ const HomeScreen = () => {
   const [recording, setRecording] = useState();
   const [recordings, setRecordings] = useState([]);
   const [location, setLocation] = useState(null);
+  const [showCamera, setShowCamera] = useState(false);
+  const [photo, setPhoto] = useState(null);
+  const cameraRef = useRef(null);
 
+  const toggleCamera = () => {
+    setShowCamera(!showCamera);
+    console.log("Toggling camera, showCamera:", !showCamera);
+  };
+
+  const takePic = async () => {
+    if (cameraRef.current) {
+      const options = { quality: 1, base64: true, exif: false };
+      const newPhoto = await cameraRef.current.takePictureAsync(options);
+      setPhoto(newPhoto);
+    }
+  };
+
+  if (photo) {
+    // Photo preview and options to share, save, or discard
+    return (
+      <SafeAreaView style={styles.container}>
+        <Image style={styles.preview} source={{ uri: photo.uri }} />
+        <Button title="Share" onPress={() => shareAsync(photo.uri)} />
+        <Button title="Save" onPress={() => MediaLibrary.saveToLibraryAsync(photo.uri)} />
+        <Button title="Discard" onPress={() => setPhoto(null)} />
+      </SafeAreaView>
+    );
+  }
+
+  
   const convertAudioToBase64 = async (uri) => {
     try {
       const audioData = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
@@ -166,7 +200,6 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-
       {location && (
         <MapView
           style={styles.map}
@@ -187,18 +220,38 @@ const HomeScreen = () => {
         </MapView>
       )}
 
-      {/* Circular Button with Microphone Icon */}
+      {/* {showCamera && (
+        <Camera style={styles.camera} ref={cameraRef}>
+          <View style={styles.cameraContent}>
+            <TouchableOpacity onPress={takePic} style={styles.cameraButton}>
+              <FontAwesome name="camera" size={40} color="white" />
+            </TouchableOpacity>
+          </View>
+        </Camera>
+      )} */}
+    
+      <View style={styles.container}>
+        <TouchableOpacity onPress={toggleCamera} style={styles.cameraButton}>
+          <Icon name="camera-alt" size={30} color="#FFF" />
+          {showCamera && <CameraScan />}
+        </TouchableOpacity>
+      </View>
+
+      
       <TouchableOpacity style={styles.micButton} onPress={handlePress}>
         <Icon name="mic" size={30} color="#FFF" />
       </TouchableOpacity>
-      {recordings.length > 0 && (
+
+      {/* {recordings.length > 0 && 
         <View style={styles.playButton}>
           <Button
             title="Play Last Recording"
-            onPress={() => playRecording(recordings[recordings.length - 1].file)}
+            onPress={() =>
+              playRecording(recordings[recordings.length - 1].file)
+            }
           />
         </View>
-      )}
+      )} */}
     </View>
   );
 };
@@ -206,22 +259,24 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
+    width: "100%",
+    height: "100%",
   },
   map: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
   },
   micButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
-    alignSelf: 'center',
-    backgroundColor: '#007AFF', // Change as per your preference
+    alignSelf: "left",
+    backgroundColor: "#007AFF", // Change as per your preference
     borderRadius: 30,
+    left: 20,
     width: 60,
     height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -231,13 +286,15 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  playButton: {
-    position: 'absolute',
-    paddingTop: 50,
-
-  }
-
-
+  cameraButton: {
+    position: "absolute",
+    backgroundColor: "#007AFF",
+    bottom: 20,
+    right: 10,
+    padding: 20,
+    borderRadius: 30,
+   
+  },
 });
 
 export default HomeScreen;
