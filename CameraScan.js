@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text, SafeAreaView, Button, Image  } from 'react-native';
-import { Camera, CameraType, requestCameraPermissionsAsync, getCameraPermissionsAsync,  } from 'expo-camera';
+import { Camera, CameraType, requestCameraPermissionsAsync, getCameraPermissionsAsync, WhiteBalance,  } from 'expo-camera';
 import { FontAwesome } from 'react-native-vector-icons';
 import * as MediaLibrary from 'expo-media-library';
 import { shareAsync } from 'expo-sharing';
@@ -76,7 +76,7 @@ const CameraScan = () => {
     <Camera style={styles.camera} ref={cameraRef}>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.takePicButton} onPress={takePic}>
-          <Text style={styles.takePicText}>Take Pic</Text>
+          <Text style={styles.takePicText}>Capture</Text>
         </TouchableOpacity>
       </View>
     </Camera>
@@ -126,17 +126,18 @@ const styles = StyleSheet.create({
     height: '100%', 
   },
   takePicButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: 'white',
     borderRadius: 30,
     padding: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20, 
+    marginBottom: 600,
+    marginRight: 300,
+    left: 150,
+    top: 550,
   },
   preview: {
     width: '200%', 
     height: '200%', 
-    position: 'absolute', 
+    position: 'absolute',
   },
 });
 
